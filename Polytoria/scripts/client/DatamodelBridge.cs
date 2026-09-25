@@ -218,8 +218,10 @@ public partial class DatamodelBridge : Node3D
 		bool isDynamic = !part.Anchored;
 		bool split = !isDynamic && _groupCounts.GetValueOrDefault((part.Material, part.Shape)) >= SplitGroupSize;
 		float size = split ? ChunkBaseSize : CoarseChunkSize;
+		
+		float sizeInHalf = size * 0.5f;
 
-		Vector3 pos = position + new Vector3(size * 0.5f, size * 0.5f, size * 0.5f);
+		Vector3 pos = position + new Vector3(sizeInHalf, sizeInHalf, sizeInHalf);
 		Vector3I coord = new(
 			Mathf.FloorToInt(pos.X / size),
 			Mathf.FloorToInt(pos.Y / size),
