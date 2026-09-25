@@ -184,8 +184,13 @@ public partial class DatamodelBridge : Node3D
 				}
 				else
 				{
+					Color partColor = part.Color;
 					handle!.Batch.MultiMesh.SetInstanceTransform(handle.Index, part.GetGlobalTransform());
-					handle.Batch.MultiMesh.SetInstanceColor(handle.Index, part.Color.SrgbToLinear());
+					if(handle.Color != partColor)
+					{
+						handle.Color = partColor;
+						handle.Batch.MultiMesh.SetInstanceColor(handle.Index, partColor.SrgbToLinear());
+					}
 				}
 			}
 			else
@@ -292,7 +297,7 @@ public partial class DatamodelBridge : Node3D
 		batch.MultiMesh.SetInstanceTransform(index, part.GetGlobalTransform());
 		batch.MultiMesh.SetInstanceColor(index, part.Color.SrgbToLinear());
 
-		_handles[part] = new PartHandle { Key = key, Batch = batch, Index = index };
+		_handles[part] = new PartHandle { Key = key, Batch = batch, Index = index, Color = part.Color };
 
 		UpdateGroupCount(key.Material, key.Shape, key.IsDynamic, 1);
 	}
@@ -483,6 +488,7 @@ public partial class DatamodelBridge : Node3D
 		public ChunkKey Key;
 		public ChunkBatch Batch = null!;
 		public int Index;
+		public Color Color;
 	}
 
 	private record struct ChunkKey(
