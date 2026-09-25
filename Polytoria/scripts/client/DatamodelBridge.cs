@@ -364,24 +364,25 @@ public partial class DatamodelBridge : Node3D
 
 	private static void ResizeBatch(ChunkBatch batch, int target)
 	{
-		if (target <= batch.MultiMesh.InstanceCount) return;
+		MultiMesh multiMesh = batch.MultiMesh;
+		if (target <= multiMesh.InstanceCount) return;
 
 		int oldUsedCount = batch.Count;
-		int newCap = batch.MultiMesh.InstanceCount;
+		int newCap = multiMesh.InstanceCount;
 
 		while (newCap < target)
 		{
 			newCap *= 2;
 		}
 
-		batch.MultiMesh.InstanceCount = newCap;
+		multiMesh.InstanceCount = newCap;
 
 		// changing instancecount wipes multimesh data
 		for (int i = 0; i < oldUsedCount; i++)
 		{
 			var p = batch.Parts[i];
-			batch.MultiMesh.SetInstanceTransform(i, p.GetGlobalTransform());
-			batch.MultiMesh.SetInstanceColor(i, p.Color.SrgbToLinear());
+			multiMesh.SetInstanceTransform(i, p.GetGlobalTransform());
+			multiMesh.SetInstanceColor(i, p.Color.SrgbToLinear());
 		}
 	}
 
