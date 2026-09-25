@@ -285,6 +285,8 @@ public partial class DatamodelBridge : Node3D
 			_batches.Add(key, batch);
 		}
 
+		MultiMesh multiMesh = batch.MultiMesh;
+
 		part.RemoveSeparateMesh();
 
 		int index = batch.Count;
@@ -292,10 +294,10 @@ public partial class DatamodelBridge : Node3D
 
 		batch.Parts.Add(part);
 		batch.Count++;
-		batch.MultiMesh.VisibleInstanceCount = batch.Count;
+		multiMesh.VisibleInstanceCount = batch.Count;
 
-		batch.MultiMesh.SetInstanceTransform(index, part.GetGlobalTransform());
-		batch.MultiMesh.SetInstanceColor(index, part.Color.SrgbToLinear());
+		multiMesh.SetInstanceTransform(index, part.GetGlobalTransform());
+		multiMesh.SetInstanceColor(index, part.Color.SrgbToLinear());
 
 		_handles[part] = new PartHandle { Key = key, Batch = batch, Index = index, Color = part.Color };
 
@@ -328,6 +330,9 @@ public partial class DatamodelBridge : Node3D
 			return;
 		}
 
+		ChunkKey batchKey = batch.Key;
+		MultiMesh multiMesh = batch.MultiMesh;
+
 		int index = handle.Index;
 		int lastIndex = batch.Count - 1;
 
@@ -343,15 +348,15 @@ public partial class DatamodelBridge : Node3D
 
 			// prevents a bunch of error spam. idk why these nodes often arent in the tree but this kept spamming errors
 			bool inTree = IsInstanceValid(lastPart.GDNode3D) && lastPart.GDNode3D.IsInsideTree();
-			batch.MultiMesh.SetInstanceTransform(index, inTree ? lastPart.GetGlobalTransform() : Transform3D.Identity.Scaled(Vector3.Zero));
-			batch.MultiMesh.SetInstanceColor(index, lastPart.Color.SrgbToLinear());
+			multiMesh.SetInstanceTransform(index, inTree ? lastPart.GetGlobalTransform() : Transform3D.Identity.Scaled(Vector3.Zero));
+			multiMesh.SetInstanceColor(index, lastPart.Color.SrgbToLinear());
 		}
 
 		batch.Parts.RemoveAt(lastIndex);
 		batch.Count--;
-		batch.MultiMesh.VisibleInstanceCount = batch.Count;
+		multiMesh.VisibleInstanceCount = batch.Count;
 
-		UpdateGroupCount(batch.Key.Material, batch.Key.Shape, batch.Key.IsDynamic, -1);
+		UpdateGroupCount(batchKey.Material, batchKey.Shape, batchKey.IsDynamic, -1);
 
 		if (batch.Count == 0)
 		{
