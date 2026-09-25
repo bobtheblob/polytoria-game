@@ -215,8 +215,11 @@ public partial class DatamodelBridge : Node3D
 
 	private ChunkKey GetKeyForPart(Part part, Vector3 position)
 	{
+		Part.PartMaterialEnum material = part.Material;
+		Part.ShapeEnum shape = part.Shape;
+
 		bool isDynamic = !part.Anchored;
-		bool split = !isDynamic && _groupCounts.GetValueOrDefault((part.Material, part.Shape)) >= SplitGroupSize;
+		bool split = !isDynamic && _groupCounts.GetValueOrDefault((material, shape)) >= SplitGroupSize;
 		float size = split ? ChunkBaseSize : CoarseChunkSize;
 		
 		float sizeInHalf = size * 0.5f;
@@ -225,9 +228,10 @@ public partial class DatamodelBridge : Node3D
 		Vector3I coord = new(
 			Mathf.FloorToInt(pos.X / size),
 			Mathf.FloorToInt(pos.Y / size),
-			Mathf.FloorToInt(pos.Z / size));
+			Mathf.FloorToInt(pos.Z / size)
+		);
 
-		return new ChunkKey(coord, part.Material, part.Shape, part.Color.A < 1f, part.CastShadows, isDynamic);
+		return new ChunkKey(coord, material, shape, part.Color.A < 1f, part.CastShadows, isDynamic);
 	}
 
 	private void OnInstanceAdded(Instance instance)
